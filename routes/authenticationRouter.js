@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, registerUser } from '../controllers/authenticationController.js';
+import { loginUser, registerUser, updatePassword, updateUserInfo } from '../controllers/AuthenticationController.js';
 
 const authenticationRouter = express.Router();
 
@@ -11,8 +11,18 @@ authenticationRouter
     .route('/register')
     .post(registerUser);
 
+
+authenticationRouter
+    .route('/update-password/:id')
+    .patch(updatePassword);
+
+    authenticationRouter
+    .route('/update-user/:id')
+    .patch(updateUserInfo);
+
 // authenticationRouter
-//     .route('/update/:id')
-//     .patch(updateUser);
+//     .route('/logout/:id')
+//     .post(logoutUser);
+
 
 export default authenticationRouter;

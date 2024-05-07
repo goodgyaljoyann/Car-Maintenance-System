@@ -2,7 +2,7 @@ import pool from '../database/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'your_jwt_secret';
+const JWT_SECRET = 'pass-code2001';
 
 // Function to handle user registration
 export const registerUser = async (req, res) => {
@@ -55,3 +55,50 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+// Function to update user password
+export const updatePassword = async (req, res) => {
+    const { newPassword } = req.body;
+    const customerId = req.params.id; // Extract customer_id from request params
+
+    try {
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the user's password in the database
+        await pool.query('UPDATE customers SET password = ? WHERE customer_id = ?', [hashedPassword, customerId]);
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Function to update user information
+export const updateUserInfo = async (req, res) => {
+    const { first_name, last_name, phone, email } = req.body;
+    const customerId = req.params.id; // Extract customer_id from request params
+
+    try {
+        // Update the user's information in the database
+        await pool.query('UPDATE customers SET first_name = ?, last_name = ?, phone = ?, email = ? WHERE customer_id = ?', 
+            [first_name, last_name, phone, email, customerId]);
+
+        res.status(200).json({ message: 'User information updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+// // Function to logout user
+// export const logoutUser = async (req, res) => {
+//     // Clear the token from local storage
+//     localStorage.removeItem('authToken');
+//     res.status(200).json({ message: 'Logout successful' });
+// };
+
+//Admins
