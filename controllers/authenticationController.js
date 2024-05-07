@@ -93,6 +93,98 @@ export const updateUserInfo = async (req, res) => {
     }
 };
 
+//ADMINS
+
+// Function to handle admin registration
+export const registerAdmin = async (req, res) => {
+    const { f_name, l_name, email, password } = req.body;
+
+    try {
+        // Check if the admin already exists
+        const adminExists = await pool.query('SELECT * FROM admins WHERE email = ?', [email]);
+        if (adminExists[0].length > 0) {
+            return res.status(400).json({ message: 'Admin already exists' });
+        }
+
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Insert admin data into the database
+        await pool.query('INSERT INTO admins (f_name, l_name, email, password) VALUES (?, ?, ?, ?)',
+            [f_name, l_name, email, hashedPassword]);
+
+        res.status(201).json({ message: 'Admin registered successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+// Function to handle admin login
+export const loginAdmin = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Check if the admin exists
+        const admin = await pool.query('SELECT * FROM admins WHERE email = ?', [email]);
+        if (admin[0].length === 0) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Check if the password is correct
+        const validPassword = await bcrypt.compare(password, admin[0][0].password);
+        if (!validPassword) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Create and assign a token
+        const token = jwt.sign({ id: admin[0][0].admin_id }, JWT_SECRET);
+        res.header('auth-token', token).json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Function to update admin password
+export const updateAdminPassword = async (req, res) => {
+    const { newPassword } = req.body;
+    const adminId = req.params.id; // Extract admin_id from request params
+
+    try {
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update the admin's password in the database
+        await pool.query('UPDATE admins SET password = ? WHERE admin_id = ?', [hashedPassword, adminId]);
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Function to update admin information
+export const updateAdminInfo = async (req, res) => {
+    const { f_name, l_name, email } = req.body;
+    const adminId = req.params.id; // Extract admin_id from request params
+
+    try {
+        // Update the admin's information in the database
+        await pool.query('UPDATE admins SET f_name = ?, l_name = ?, email = ? WHERE admin_id = ?', 
+            [f_name, l_name, email, adminId]);
+
+        res.status(200).json({ message: 'Admin information updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 
 // // Function to logout user
 // export const logoutUser = async (req, res) => {
