@@ -10,6 +10,7 @@ import customerRouter from './routes/customerRouter.js';
 import locationRouter from './routes/locationRouter.js';
 import paymentRouter from './routes/paymentRouter.js';
 import productRouter from './routes/productRouter.js';
+import statisticsRouter from './routes/statisticsRouter.js';
 // import statements for routes
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/v1/locations', locationRouter);
 app.use('/api/v1/payments', paymentRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/services', serviceRouter);
+app.use('/api/v1/statistics', statisticsRouter);
 
 const port = process.env.PORT || 2400; // Added default port if process.env.PORT is not defined
 const server = app.listen(port, () => console.log(`Listening on http://localhost:${port}`));
