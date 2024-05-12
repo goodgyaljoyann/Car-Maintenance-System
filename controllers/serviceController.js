@@ -47,9 +47,9 @@ export const getServiceById = async (req, res, _next) => {
 
 export const createService = async (req, res, _next) => {
     try {
-        const {service_name, description, location_id, make, model, year, price, img} = req.body;
-        let sqlQuery = `INSERT INTO services (service_name, description, location_id, make, model, year, price, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        const result = await pool.query(sqlQuery, [service_name, description, location_id, make, model, year, price, img]);
+        const {service_name, description, location_id, price, img} = req.body;
+        let sqlQuery = `INSERT INTO services (service_name, description, location_id, price, img) VALUES (?, ?, ?, ?, ?)`;
+        const result = await pool.query(sqlQuery, [service_name, description, location_id, price, img]);
 
         res.status(201).json({
             status: 'success',
@@ -67,9 +67,9 @@ export const createService = async (req, res, _next) => {
 export const updateService = async (req, res, _next) => {
     try {
         const serviceId = req.params.id;
-        const {service_name, description, location_id, make, model, year, price, img} = req.body;
-        let sqlQuery = `UPDATE services SET service_name=?, description=?, location_id=?, make=?, model=?, year=?, price=?, img=? WHERE service_id=?`;
-        await pool.query(sqlQuery, [service_name, description, location_id, make, model, year, price, img, serviceId]);
+        const {service_name, description, location_id, price, img} = req.body;
+        let sqlQuery = `UPDATE services SET service_name=?, description=?, location_id=?, price=?, img=? WHERE service_id=?`;
+        await pool.query(sqlQuery, [service_name, description, location_id, price, img, serviceId]);
 
         res.status(200).json({
             status: 'success',

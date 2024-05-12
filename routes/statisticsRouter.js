@@ -1,5 +1,5 @@
 import express from 'express';
-import { getServices, getAppointments, getCustomers } from '../controllers/statisticsController.js';
+import { getServices, getAppointments, getCustomers, getDailyRevenue } from '../controllers/statisticsController.js';
 
 const statisticsRouter = express.Router();
 
@@ -33,5 +33,16 @@ statisticsRouter.get('/customers', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+statisticsRouter.get('/payments', async (req, res) => {
+    try {
+        const paymentCount = await getDailyRevenue(); // Call the function
+        res.json(paymentCount); // Send response
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 export default statisticsRouter;

@@ -33,3 +33,19 @@ export const getCustomers = async () => {
         throw error;
     }
 };
+
+// Function to get daily revenue from payments
+export const getDailyRevenue = async () => {
+    try {
+        const dailyRevenue = await pool.query(`
+            SELECT DATE(payment_date) AS date, SUM(amount) AS revenue
+            FROM payments
+            GROUP BY DATE(payment_date)
+        `);
+        return { status: 'success', data: dailyRevenue[0] }; // Return the result
+    } catch (error) {
+        console.error(error);
+        throw new Error('Internal server error'); // Throw error to be caught by caller
+    }
+};
+
