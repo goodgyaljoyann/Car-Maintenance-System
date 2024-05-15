@@ -1,5 +1,6 @@
 import pool from '../database/index.js';
 
+
 export const getAllServices = async (_req, res, _next) => {
     try {
         let sqlQuery = `SELECT * FROM services`;
@@ -45,24 +46,28 @@ export const getServiceById = async (req, res, _next) => {
     }
 };
 
+
 export const createService = async (req, res, _next) => {
     try {
-        const {service_name, description, location_id, price, img} = req.body;
-        let sqlQuery = `INSERT INTO services (service_name, description, location_id, price, img) VALUES (?, ?, ?, ?, ?)`;
-        const result = await pool.query(sqlQuery, [service_name, description, location_id, price, img]);
+      const { service_name, description, location_id, price } = req.body;
+      const img = req.file.filename; // Retrieve filename of the uploaded image
 
-        res.status(201).json({
-            status: 'success',
-            data: {result}
-        });
+      let sqlQuery = `INSERT INTO services (service_name, description, location_id, price, img) VALUES (?, ?, ?, ?, ?)`;
+      const result = await pool.query(sqlQuery, [service_name, description, location_id, price, img]);
+
+  
+      res.status(201).json({
+        status: 'success',
+        data: { result }
+      });
     } catch (error) {
-        res.status(500).json({
-            status: 'error',
-            message: 'Internal server error',
-            error: error.message
-        });
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal server error',
+        error: error.message
+      });
     }
-};
+  };
 
 export const updateService = async (req, res, _next) => {
     try {
