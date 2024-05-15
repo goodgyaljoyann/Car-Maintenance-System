@@ -10,9 +10,19 @@ import locationRouter from './routes/locationRouter.js';
 import paymentRouter from './routes/paymentRouter.js';
 import productRouter from './routes/productRouter.js';
 import statisticsRouter from './routes/statisticsRouter.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 const app = express();
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads/services', express.static(join(__dirname, 'uploads', 'services')));
 
 // CORS Configuration
 app.use(cors({

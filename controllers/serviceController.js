@@ -72,7 +72,8 @@ export const createService = async (req, res, _next) => {
 export const updateService = async (req, res, _next) => {
     try {
         const serviceId = req.params.id;
-        const {service_name, description, location_id, price, img} = req.body;
+        const img = req.file.filename; // Retrieve filename of the uploaded image
+        const {service_name, description, location_id, price} = req.body;
         let sqlQuery = `UPDATE services SET service_name=?, description=?, location_id=?, price=?, img=? WHERE service_id=?`;
         await pool.query(sqlQuery, [service_name, description, location_id, price, img, serviceId]);
 

@@ -27,7 +27,7 @@ serviceRouter
 serviceRouter
     .route('/:id')
     .get(getServiceById)
-    .patch(updateService)
+    .patch(upload.single('img'), updateService)
     .delete(deleteService);
 
     
