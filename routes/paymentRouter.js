@@ -12,7 +12,7 @@ paymentRouter
 paymentRouter
     .route('/:id')
     .get(getPaymentById)
-    .patch(updatePayment)
+    .patch (updatePayment)
     .delete(deletePayment);
     
 export default paymentRouter;

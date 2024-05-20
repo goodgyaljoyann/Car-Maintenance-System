@@ -23,6 +23,7 @@ const app = express();
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads/services', express.static(join(__dirname, 'uploads', 'services')));
+app.use('/uploads/products', express.static(join(__dirname, 'uploads', 'products')));
 
 // CORS Configuration
 app.use(cors({

@@ -1,15 +1,25 @@
 import pool from '../database/index.js';
 
 // Function to get all products
-export const getAllProducts = async (req, res) => {
+export const getAllProducts = async (_req, res, _next) => {
     try {
-        const products = await pool.query('SELECT * FROM products');
-        res.status(200).json({ status: 'success', data: products[0] });
+        let sqlQuery = `SELECT * FROM products`;
+        const [products] = await pool.query(sqlQuery);
+
+        res.status(200).json({
+            status: 'success',
+            results: products.length,
+            data: { products },
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: 'error', message: 'Internal server error' });
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            error: error.message
+        });
     }
 };
+
 
 // Function to get product by ID
 export const getProductById = async (req, res) => {
@@ -29,7 +39,8 @@ export const getProductById = async (req, res) => {
 
 // Function to create a new product
 export const createProduct = async (req, res) => {
-    const { product_name, description, price, img } = req.body;
+    const { product_name, description, price} = req.body;
+    const img = req.file.filename;
 
     try {
         await pool.query('INSERT INTO products (product_name, description, price, img) VALUES (?, ?, ?, ?)',
@@ -44,7 +55,8 @@ export const createProduct = async (req, res) => {
 // Function to update an existing product
 export const updateProduct = async (req, res) => {
     const productId = req.params.id;
-    const { product_name, description, price, img } = req.body;
+    const { product_name, description, price } = req.body;
+    const img = req.file.filename;
 
     try {
         await pool.query('UPDATE products SET product_name = ?, description = ?, price = ?, img = ? WHERE product_id = ?',
