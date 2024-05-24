@@ -30,7 +30,6 @@ export const registerUser = async (req, res) => {
     }
 };
 
-// Function to handle user login
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -49,7 +48,9 @@ export const loginUser = async (req, res) => {
 
         // Create and assign a token
         const token = jwt.sign({ id: user[0][0].customer_id }, JWT_SECRET);
-        res.header('auth-token', token).json({ token });
+
+        // Return token and customer_id in the response
+        res.header('auth-token', token).json({ token, customer_id: user[0][0].customer_id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

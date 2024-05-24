@@ -71,20 +71,41 @@ export const createAppointment = async (req, res) => {
 };
 
 
-// Function to update an existing appointment
 export const updateAppointment = async (req, res) => {
-    const apptId = req.params.id;
-    const { customer_id, service_id, date, time, make, model, year, mechanic_note, payment_status, appt_status } = req.body;
+    const appointmentId = req.params.id;
+    const { service_id, payment_status, appt_status } = req.body;
 
     try {
-        await pool.query('UPDATE appointments SET customer_id = ?, service_id = ?, date = ?, time = ?, make = ?, model = ?, year = ?, mechanic_note, payment_status = ?, appt_status = ? WHERE appointment_id = ?',
-            [customer_id, service_id, date, time,  make, model, year, mechanic_note, payment_status, appt_status, apptId]);
+        const [result] = await pool.query(
+            `UPDATE appointments SET service_id = ?, payment_status = ?, appt_status = ? WHERE appointment_id = ?`,
+            [service_id, payment_status, appt_status, appointmentId]
+        );
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ status: 'error', message: 'Appointment not found' });
+        }
+        
         res.status(200).json({ status: 'success', message: 'Appointment updated successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 };
+
+
+export const getLastAppointmentIdByCustomer = async (customer_id) => {
+    try {
+        const [rows] = await pool.query(
+            `SELECT appointment_id FROM appointments WHERE customer_id = ? ORDER BY appointment_id DESC LIMIT 1`,
+            [customer_id]
+        );
+        return rows[0]?.appointment_id;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 
 // Function to delete an appointment
 export const deleteAppointment = async (req, res) => {
@@ -98,3 +119,4 @@ export const deleteAppointment = async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 };
+

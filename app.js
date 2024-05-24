@@ -10,7 +10,9 @@ import locationRouter from './routes/locationRouter.js';
 import paymentRouter from './routes/paymentRouter.js';
 import productRouter from './routes/productRouter.js';
 import statisticsRouter from './routes/statisticsRouter.js';
-import path from 'path';
+import checkAvailabilityRouter from './routes/checkAvailabilityRouter.js';
+import authenticateToken from './authMiddleware/authenticateToken.js';
+import historyRouter from './routes/historyRouter.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -42,11 +44,19 @@ app.use('/api/v1/admins', adminRouter);
 app.use('/api/v1/appointments', appointmentRouter);
 app.use('/api/v1/authentication', authenticationRouter);
 app.use('/api/v1/customers', customerRouter);
+app.use('/api/v1/history', historyRouter);
 app.use('/api/v1/locations', locationRouter);
 app.use('/api/v1/payments', paymentRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/services', serviceRouter);
 app.use('/api/v1/statistics', statisticsRouter);
+app.use('/api/v1/check-availability', checkAvailabilityRouter);
+//Protected Routes
+app.use('/payments', authenticateToken, paymentRouter);
+app.use('/appointments', authenticateToken, appointmentRouter);
+app.use('/history', authenticateToken, historyRouter);
+// app.use('/edit-preferences', authenticateToken, preferencesRouter);
+
 
 const port = process.env.PORT || 2400; // Added default port if process.env.PORT is not defined
 const server = app.listen(port, () => console.log(`Listening on http://localhost:${port}`));
