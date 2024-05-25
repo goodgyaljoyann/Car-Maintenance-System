@@ -55,7 +55,7 @@ app.use('/api/v1/check-availability', checkAvailabilityRouter);
 app.use('/payments', authenticateToken, paymentRouter);
 app.use('/appointments', authenticateToken, appointmentRouter);
 app.use('/history', authenticateToken, historyRouter);
-// app.use('/edit-preferences', authenticateToken, preferencesRouter);
+app.use('/edit-info/:id', authenticateToken, customerRouter);
 
 
 const port = process.env.PORT || 2400; // Added default port if process.env.PORT is not defined

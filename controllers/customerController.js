@@ -67,9 +67,9 @@ export const createCustomer = async (req, res, _next) => {
 export const updateCustomer = async (req, res, _next) => {
     try {
         const customerId = req.params.id;
-        const {first_name, last_name, phone, email, password, location_id} = req.body;
-        let sqlQuery = `UPDATE customers SET first_name=?, last_name=?, phone=?, email=?, password=?, location_id=? WHERE customer_id=?`;
-        await pool.query(sqlQuery, [first_name, last_name, phone, email, password, location_id, customerId]);
+        const {first_name, last_name, phone, email, location_id} = req.body;
+        let sqlQuery = `UPDATE customers SET first_name=?, last_name=?, phone=?, email=?, location_id=? WHERE customer_id=?`;
+        await pool.query(sqlQuery, [first_name, last_name, phone, email, location_id, customerId]);
 
         res.status(200).json({
             status: 'success',

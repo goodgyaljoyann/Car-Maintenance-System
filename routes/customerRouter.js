@@ -14,5 +14,7 @@ customerRouter
     .get(getCustomerById)
     .patch(updateCustomer)
     .delete(deleteCustomer);
+
+    customerRouter.patch('edit-info/:id', updateCustomer);
     
 export default customerRouter;
