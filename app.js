@@ -13,6 +13,7 @@ import statisticsRouter from './routes/statisticsRouter.js';
 import checkAvailabilityRouter from './routes/checkAvailabilityRouter.js';
 import authenticateToken from './authMiddleware/authenticateToken.js';
 import historyRouter from './routes/historyRouter.js';
+import messageRouter from './routes/messagesRouter.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -51,6 +52,7 @@ app.use('/api/v1/products', productRouter);
 app.use('/api/v1/services', serviceRouter);
 app.use('/api/v1/statistics', statisticsRouter);
 app.use('/api/v1/check-availability', checkAvailabilityRouter);
+app.use('/api/v1/messages', messageRouter);
 //Protected Routes
 app.use('/payments', authenticateToken, paymentRouter);
 app.use('/appointments', authenticateToken, appointmentRouter);
