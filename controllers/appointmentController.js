@@ -39,6 +39,18 @@ export const getScheduledAppointments = async (req, res) => {
     }
 };
 
+// Function to get scheduled appointments ordered by date
+export const getActiveAppointments = async (req, res) => {
+    try {
+        // Query to select appointments with appt_status 'scheduled' and order them by date
+        const appointments = await pool.query('SELECT * FROM appointments WHERE appt_status = ? ORDER BY date', ['active']);
+        res.status(200).json({ status: 'success', info: appointments[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Internal server error' });
+    }
+};
+
 // // Function to create a new appointment
 // export const createAppointment = async (req, res) => {
 //     // Extract customer ID from cookie
@@ -91,6 +103,28 @@ export const updateAppointment = async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 };
+
+export const updateAppointmentStatus = async (req, res) => {
+    const appointmentId = req.params.id;
+    const { appt_status } = req.body;
+
+    try {
+        const [result] = await pool.query(
+            `UPDATE appointments SET appt_status = ? WHERE appointment_id = ?`,
+            [appt_status, appointmentId]
+        );
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ status: 'error', message: 'Appointment not found' });
+        }
+        
+        res.status(200).json({ status: 'success', message: 'Appointment status updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'error', message: 'Internal server error' });
+    }
+};
+
 
 
 export const getLastAppointmentIdByCustomer = async (customer_id) => {

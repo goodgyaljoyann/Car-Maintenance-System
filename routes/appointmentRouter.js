@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllAppointments, getAppointmentById, createAppointment, updateAppointment, deleteAppointment, getScheduledAppointments,  getLastAppointmentIdByCustomer  } from '../controllers/AppointmentController.js';
+import { getAllAppointments, getAppointmentById, createAppointment, updateAppointment, deleteAppointment, getScheduledAppointments,  getLastAppointmentIdByCustomer, updateAppointmentStatus, getActiveAppointments } from '../controllers/AppointmentController.js';
 
 
 const appointmentRouter = express.Router();
@@ -13,11 +13,19 @@ appointmentRouter
     .route('/scheduled')
     .get(getScheduledAppointments)
 
+    appointmentRouter
+    .route('/active')
+    .get(getActiveAppointments)
+
 appointmentRouter
     .route('/:id')
     .get(getAppointmentById)
     .patch(updateAppointment)
     .delete(deleteAppointment);
+appointmentRouter
+.route('/status/:id')
+.patch(updateAppointmentStatus)
+
 
 // Add route for fetching last appointment ID by customer
 appointmentRouter.get('/last/:customer_id', async (req, res) => {

@@ -142,7 +142,7 @@ export const loginAdmin = async (req, res) => {
 
         // Create and assign a token
         const token = jwt.sign({ id: admin[0][0].admin_id }, JWT_SECRET);
-        res.header('auth-token', token).json({ token });
+        res.header('auth-token', token).json({ token, admin_id: admin[0][0].admin_id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
