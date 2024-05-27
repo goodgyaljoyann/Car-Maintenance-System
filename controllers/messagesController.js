@@ -11,16 +11,35 @@ export const getAllMessages = async (req, res) => {
     }
 };
 
-// Function to get appointment by ID
-export const getMessageById = async (req, res) => {
-    const { id } = req.params;
+// // Function to get appointment by ID
+// export const getMessageById = async (req, res) => {
+//     const { id } = req.params;
+
+//     try {
+//         const message = await pool.query('SELECT * FROM messages WHERE message_id = ?', [id]);
+//         if (message[0].length === 0) {
+//             return res.status(404).json({ status: 'error', message: 'Message not found' });
+//         }
+//         res.status(200).json({ status: 'success', data: message[0][0] });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ status: 'error', message: 'Internal server error' });
+//     }
+// };
+
+// Function to get the last message by customer ID
+export const getLastMessageByCustomerId = async (req, res) => {
+    const { customer_id } = req.params;
 
     try {
-        const message = await pool.query('SELECT * FROM messages WHERE message_id = ?', [id]);
-        if (message[0].length === 0) {
-            return res.status(404).json({ status: 'error', message: 'Message not found' });
+        const messages = await pool.query(
+            'SELECT * FROM messages WHERE customer_id = ? ORDER BY created_at DESC LIMIT 1',
+            [customer_id]
+        );
+        if (messages[0].length === 0) {
+            return res.status(404).json({ status: 'error', message: 'No messages found for this customer' });
         }
-        res.status(200).json({ status: 'success', data: message[0][0] });
+        res.status(200).json({ status: 'success', data: messages[0][0] });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: 'error', message: 'Internal server error' });
@@ -41,23 +60,22 @@ export const getLastAppointmentIdByCustomer = async (customerId) => {
     }
 };
 
-// Controller for customers creating a message
 export const createMessage = async (req, res) => {
     try {
-        const { customer_id, message_content } = req.body;
-        const appointmentId = await getLastAppointmentIdByCustomer(customer_id);
-        
-
-        const query = `INSERT INTO messages (customer_id, appointment_id, message_content) VALUES (?, ?, ?)`;
-        const values = [customer_id, appointmentId, message_content];
-        await pool.query(query, values);
-
-        res.status(201).json({ message: 'Message created successfully' });
+      const { customer_id, message_content } = req.body;
+      const appointmentId = await getLastAppointmentIdByCustomer(customer_id);
+  
+      const query = `INSERT INTO messages (customer_id, appointment_id, message_content) VALUES (?, ?, ?)`;
+      const values = [customer_id, appointmentId, message_content];
+      await pool.query(query, values);
+  
+      res.status(201).json({ status: 'success', message: 'Message created successfully' }); // Ensure status is 'success'
     } catch (err) {
-        console.error('Error creating message:', err);
-        res.status(500).json({ error: 'Internal server error' });
+      console.error('Error creating message:', err);
+      res.status(500).json({ status: 'error', error: 'Internal server error' }); // Include status 'error'
     }
-};
+  };
+  
 
 // Controller for admins updating the message reply
 export const updateMessageReply = async (req, res) => {
