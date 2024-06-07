@@ -59,10 +59,25 @@ export const loginUser = async (req, res) => {
 
 // Function to update user password
 export const updatePassword = async (req, res) => {
-    const { newPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
     const customerId = req.params.id; // Extract customer_id from request params
 
     try {
+        // Fetch the current password hash from the database
+        const result = await pool.query('SELECT password FROM customers WHERE customer_id = ?', [customerId]);
+        
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'Customer not found' });
+        }
+
+        const currentHashedPassword = result[0].password;
+
+        // Compare the old password with the current hashed password
+        const isMatch = await bcrypt.compare(oldPassword, currentHashedPassword);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Old password is incorrect' });
+        }
+
         // Hash the new password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -151,16 +166,26 @@ export const loginAdmin = async (req, res) => {
 
 // Function to update admin password
 export const updateAdminPassword = async (req, res) => {
-    const { newPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
     const adminId = req.params.id; // Extract admin_id from request params
 
     try {
+        // Retrieve the admin's current password from the database
+        const [admin] = await pool.query('SELECT password FROM admins WHERE admin_id = ?', [adminId]);
+        const hashedOldPassword = admin[0].password;
+
+        // Compare the old password provided by the user with the one retrieved from the database
+        const passwordMatch = await bcrypt.compare(oldPassword, hashedOldPassword);
+        if (!passwordMatch) {
+            return res.status(400).json({ message: 'Incorrect old password' });
+        }
+
         // Hash the new password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
         // Update the admin's password in the database
-        await pool.query('UPDATE admins SET password = ? WHERE admin_id = ?', [hashedPassword, adminId]);
+        await pool.query('UPDATE admins SET password = ? WHERE admin_id = ?', [hashedNewPassword, adminId]);
 
         res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {

@@ -67,9 +67,9 @@ export const createAdmin = async (req, res, _next) => {
 export const updateAdmin = async (req, res, _next) => {
     try {
         const adminId = req.params.id;
-        const {f_name, l_name, email, password} = req.body;
-        let sqlQuery = `UPDATE admins SET f_name=?, l_name=?, email=?, password=? WHERE admin_id=?`;
-        await pool.query(sqlQuery, [f_name, l_name, email, password, adminId]);
+        const {f_name, l_name, email} = req.body;
+        let sqlQuery = `UPDATE admins SET f_name=?, l_name=?, email=? WHERE admin_id=?`;
+        await pool.query(sqlQuery, [f_name, l_name, email, adminId]);
 
         res.status(200).json({
             status: 'success',

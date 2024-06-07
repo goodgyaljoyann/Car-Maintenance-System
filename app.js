@@ -57,6 +57,8 @@ app.use('/api/v1/messages', messageRouter);
 app.use('/payments', authenticateToken, paymentRouter);
 app.use('/appointments', authenticateToken, appointmentRouter);
 app.use('/history', authenticateToken, historyRouter);
+app.use('/messages', authenticateToken, messageRouter);
+app.use('/view-customer', authenticateToken, customerRouter);
 app.use('/edit-info/:id', authenticateToken, customerRouter);
 
 

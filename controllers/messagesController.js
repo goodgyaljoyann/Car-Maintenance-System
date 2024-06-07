@@ -93,3 +93,22 @@ export const updateMessageReply = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+export const deleteMessage = async (req, res, _next) => {
+    try {
+        const messageId = req.params.id;
+        let sqlQuery = `DELETE FROM messages WHERE message_id=?`;
+        await pool.query(sqlQuery, [messageId]);
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Message deleted successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
