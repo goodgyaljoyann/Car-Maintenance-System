@@ -60,37 +60,37 @@ export const loginUser = async (req, res) => {
 // Function to update user password
 export const updatePassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    const customerId = req.params.id; // Extract customer_id from request params
-
+    const customerId = req.params.id;
+  
     try {
-        // Fetch the current password hash from the database
-        const result = await pool.query('SELECT password FROM customers WHERE customer_id = ?', [customerId]);
-        
-        if (result.length === 0) {
-            return res.status(404).json({ message: 'Customer not found' });
-        }
-
-        const currentHashedPassword = result[0].password;
-
-        // Compare the old password with the current hashed password
-        const isMatch = await bcrypt.compare(oldPassword, currentHashedPassword);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Old password is incorrect' });
-        }
-
-        // Hash the new password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-        // Update the user's password in the database
-        await pool.query('UPDATE customers SET password = ? WHERE customer_id = ?', [hashedPassword, customerId]);
-
-        res.status(200).json({ message: 'Password updated successfully' });
+      // Fetch the user's current hashed password from the database
+      const [result] = await pool.query('SELECT password FROM customers WHERE customer_id = ?', [customerId]);
+      const storedHashedPassword = result[0]?.password;
+  
+      if (!storedHashedPassword) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Compare the provided old password with the stored hashed password
+      const isMatch = await bcrypt.compare(oldPassword, storedHashedPassword);
+  
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Old password is incorrect' });
+      }
+  
+      // Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+  
+      // Update the user's password in the database
+      await pool.query('UPDATE customers SET password = ? WHERE customer_id = ?', [hashedPassword, customerId]);
+  
+      res.status(200).json({ message: 'Password updated successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-};
+  };
 
 // Function to update user information
 export const updateUserInfo = async (req, res) => {
